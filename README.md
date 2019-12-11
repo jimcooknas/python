@@ -7,6 +7,7 @@ This is a bunch of simple utilities for biology which created during my son's Ph
 A set of functions to manipulate VCF files.
 
 Named functions:
+
    -------------------------------------------------------------------------------------------------------
     fields, meta, info, filter, format, data, fileformat = vcf.read('some_file_name_for_vcf', getdata=True)
                  if getdata=False then the returned 'data' is an empty list of dictionaries.
@@ -51,7 +52,6 @@ Named functions:
 
 Problem description:
 
-    --------------------
     We have a VCF file ('filename') containing lines with n columns, where after the FORMAT column
     the samples columns follow
     We want to reproduce this file replacing the sample columns with a relevant subcolumn of FORMAT
@@ -73,7 +73,6 @@ Problem description:
 
 Problem description:
 
-    --------------------
     We have a file ('filename') containing lines with n columns, having 3 columns (col1, col2 and col3) 
     with strings like 'GTACT'
     We want to reproduce this file adding two more columns at the end of each line. These columns
@@ -100,7 +99,6 @@ Problem description:
 
 Problem description:
 
-    --------------------
     We have a file ('gene_file') containing lines with n columns. We also have another 
     file ('details_file') the above mentioned n columns plus another column at the end 
     of each line containing the 'details'
@@ -121,7 +119,6 @@ Problem description:
 
 Problem description:
 
-    --------------------
     We have a file (tab separated) in the form:
     ***************************************************
     CHROM	POS	N_ALLELES	N_CHR	{ALLELE:FREQ}
@@ -147,7 +144,6 @@ Problem description:
 
 Problem description:
 
-    --------------------
     We have a bunch of files (in fasta format) containing samples' genes.
     Files resides in 'datapath_in' folder and are in the form:
         >FRA_SYROS_2000_5_Bg_tritici_BgtE-4528
@@ -175,5 +171,53 @@ Problem description:
     We want to create another bunch of files (one for each gene contained in the
     'gene_file') in the folder 'datapath_out', with each file containing all the
     sample sequences with the said gene and its alternatives, in fasta format.
+
+
+<b>filterdata.py</b>
+
+Problem description
+
+    We have a file (filein) containing several columns and many lines.
+    We read each line (one by one) from the filein
+    For each line read, we get values for four variables:
+       gene   = the text of first column
+       gene2  = the first 9 letter of the text in second column
+       gene2_total = the text in second column (total string)
+       length = the text in third column (it is actually number but we read it as text). Is not used
+       size   = the text in fourth column. We read it as text and later we convert it to float
+    We read each line and we create blocks that have the same gene (first column).
+    If in any line we find that there is same gene2 in the block then we check
+    the sizes to see if the fraction is less than 1e-50. 
+    In this case we continue normally else we discard the block.
+     
+    NEW ADDITIONS
+    We need all four genes to be present in a block, else we drop it
+    We only keep the genes that are nearest to zero (only four items in every block)
+    If two gene2 are identical then we accept them without testing the size
+
+
+<b>changefiledata.py</b>
+
+    standard columns (default=9) tab separated
+    #  0    1   2  3   4    5    6      7    8
+    #CHROM POS ID REF ALT QUAL FILTER INFO FORMAT
+
+    Reads a text file and for each line where reference column differs from
+    the Info column (after 'AA='):
+    changes the Info value (?),
+    interchange REF and ALT columns,
+    changes DT format value from 1 to 0 or from 0 to 1 and
+    interchanges values inside AD and PL columns of samples format.
+
+    Arguments:
+    filein:  the filename of the data file from where data is read. If it is
+             not given then it asks for a filename
+    fileout: the output file where the anchanged and changed data will be written.
+             If this argument is not given, the script uses the 'filein' adding
+             '_out' keyword at the end of the name
+    stdcols (default=9): the count of standard columns after which the samples start
+    log_console (default=False): if the script must write infos on console
+    markchanges (default=True):  if True then in each changed line an asterisk (*)
+                                 is added at the start of the line
 
 
